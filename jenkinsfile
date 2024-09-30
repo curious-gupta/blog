@@ -11,8 +11,15 @@ pipeline {
     stages {
         stage('Checkout Code') {
             steps {
-                // Checkout code from the specified Git repository
                 checkout scm
+            }
+        }
+        stage('Prepare Workspace') {
+            steps {
+                // Adjust permissions for the workspace
+                sh '''
+                    chmod -R 777 "${WORKSPACE}"
+                '''
             }
         }
         stage('Test') {
@@ -30,7 +37,7 @@ pipeline {
                     def outputDir = "${WORKSPACE}/_site"
 
                     // Create the output directory if it doesn't exist
-                    sh "sudo mkdir -p ${outputDir}"
+                    sh "mkdir -p ${outputDir}"
 
                     // Build the Jekyll site and specify the output directory
                     sh '''
@@ -42,7 +49,6 @@ pipeline {
         }
         stage('Archive Artifacts') {
             steps {
-                // Archive the built site for later access
                 archiveArtifacts artifacts: '_site/**/*', fingerprint: true
             }
         }
