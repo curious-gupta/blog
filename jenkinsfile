@@ -30,7 +30,7 @@ pipeline {
                     def outputDir = "${WORKSPACE}/_site"
 
                     // Create the output directory if it doesn't exist
-                    sh "mkdir -p ${outputDir}"
+                    sh "sudo mkdir -p ${outputDir}"
 
                     // Build the Jekyll site and specify the output directory
                     sh '''
