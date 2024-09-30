@@ -1,0 +1,50 @@
+pipeline {
+    agent {
+        docker {
+            image 'jekyll/jekyll:4.0'
+            args '''
+                -u root:root
+                -v "${WORKSPACE}:/srv/jekyll"
+            '''
+        }
+    }
+    stages {
+        stage('Checkout Code') {
+            steps {
+                // Checkout code from the specified Git repository
+                checkout scm
+            }
+        }
+        stage('Test') {
+            steps {
+                sh '''
+                    cd /srv/jekyll
+                    jekyll --version
+                '''
+            }
+        }
+        stage('Build') {
+            steps {
+                script {
+                    // Define the output directory for the built site
+                    def outputDir = "${WORKSPACE}/_site"
+
+                    // Create the output directory if it doesn't exist
+                    sh "mkdir -p ${outputDir}"
+
+                    // Build the Jekyll site and specify the output directory
+                    sh '''
+                        cd /srv/jekyll
+                        jekyll build --destination /srv/jekyll/_site
+                    '''
+                }
+            }
+        }
+        stage('Archive Artifacts') {
+            steps {
+                // Archive the built site for later access
+                archiveArtifacts artifacts: '_site/**/*', fingerprint: true
+            }
+        }
+    }
+}
