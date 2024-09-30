@@ -3,7 +3,6 @@ pipeline {
         docker {
             image 'jekyll/jekyll:4.0'
             args '''
-                -u root:root
                 -v "${WORKSPACE}:/srv/jekyll"
             '''
         }
@@ -12,14 +11,6 @@ pipeline {
         stage('Checkout Code') {
             steps {
                 checkout scm
-            }
-        }
-        stage('Prepare Workspace') {
-            steps {
-                // Adjust permissions for the workspace
-                sh '''
-                    chmod -R 777 "${WORKSPACE}"
-                '''
             }
         }
         stage('Test') {
